@@ -17,17 +17,16 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  /* No page scroll on mobile */
 }
 
 body {
   background: #000;
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  min-height: 100dvh;
-  /* dvh = dynamic viewport height (phone safe area) */
+  align-items: stretch;
+  /* fill full height */
+  /* Use dvh so the layout accounts for browser chrome on phones */
+  height: 100dvh;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
@@ -38,11 +37,16 @@ body {
 #game-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  align-items: stretch;
+  /* children fill full width */
   width: 100%;
-  max-width: 420px;
-  padding: 0 4px;
+  max-width: 480px;
+  /* cap width on tablets/desktop */
+  height: 100dvh;
+  /* fill entire phone screen */
+  padding: 0;
+  /* no padding — every pixel counts */
+  gap: 0;
 }
 
 
@@ -51,26 +55,50 @@ body {
 =========================== */
 #header {
   width: 100%;
+  flex-shrink: 0;
+  /* never compress the header */
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #fff;
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  /* Safe area inset for notch phones */
+  padding-top: max(6px, env(safe-area-inset-top));
 }
 
 #title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   color: #7df9ff;
   text-shadow: 0 0 8px #7df9ff;
 }
 
 #score-display {
-  font-size: 15px;
+  font-size: 14px;
   color: #ffd700;
+}
+
+/* Fullscreen toggle button */
+#fs-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 18px;
+  width: 34px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+#fs-btn:active {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 
@@ -79,16 +107,17 @@ body {
    Fills width, keeps 2:3 ratio
 =========================== */
 #game-container {
+  flex: 1;
+  /* expand to fill ALL remaining space */
+  min-height: 0;
+  /* required for flex children to shrink */
   width: 100%;
-  /* Maintain a 400:600 (2:3) aspect ratio on any screen */
-  aspect-ratio: 2 / 3;
-  max-height: 60vh;
-  /* Don't push controls off screen */
   background: radial-gradient(ellipse at center, #0a0a2e 0%, #000005 100%);
   position: relative;
   overflow: hidden;
-  border: 2px solid #1a1a5e;
-  border-radius: 14px;
+  /* No border-radius on mobile full-screen — edge-to-edge */
+  border-left: 1px solid #1a1a5e;
+  border-right: 1px solid #1a1a5e;
   box-shadow:
     0 0 30px rgba(100, 100, 255, 0.35),
     inset 0 0 60px rgba(0, 0, 50, 0.5);
@@ -429,8 +458,9 @@ body {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  background: rgba(0, 0, 0, 0.78);
-  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.80);
+  border-radius: 0;
+  /* edge-to-edge in fullscreen */
   z-index: 100;
 }
 
@@ -472,8 +502,14 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  gap: 10px;
-  padding: 4px 0;
+  flex-shrink: 0;
+  /* never compress controls */
+  gap: 8px;
+  padding: 8px 8px;
+  /* Pad above iPhone home indicator so buttons aren't under it */
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 /* All three buttons share this base style */
