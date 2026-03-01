@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <!-- Mobile: fills the full phone screen, no zoom -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Space Shooter 🚀</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- Main game wrapper -->
+    <div id="game-wrapper">
+
+        <!-- Score and title bar -->
+        <div id="header">
+            <span id="title">TOILET TRUMP</span>
+            <span id="score-display">Score: <span id="score">0</span></span>
+        </div>
+
+        <!-- The game canvas area -->
+        <div id="game-container">
+
+            <!-- Animated star background -->
+            <div id="stars"></div>
+
+            <!-- Player spaceship -->
+            <img id="player" src="player2.gif" alt="Player Ship" />
+
+            <!-- Enemies and bullets are added by JavaScript -->
+
+            <!-- Win / Game Over overlay -->
+            <div id="message" class="hidden">
+                <p id="message-text"></p>
+                <button id="restart-btn" onclick="restartGame()">Play Again 🚀</button>
+            </div>
+
+        </div>
+
+        <!-- =============================================
+         TOUCH CONTROLS (shown on phones)
+         Three buttons: LEFT  |  SHOOT  |  RIGHT
+    ============================================= -->
+        <div id="touch-controls">
+            <!-- Left move button -->
+            <button id="btn-left" ontouchstart="keys['ArrowLeft']=true" ontouchend="keys['ArrowLeft']=false"
+                onmousedown="keys['ArrowLeft']=true" onmouseup="keys['ArrowLeft']=false"
+                onmouseleave="keys['ArrowLeft']=false">◀</button>
+
+            <!-- Fire button (tap = single shot, hold = auto-fire) -->
+            <button id="btn-fire" ontouchstart="keys['Space']=true" ontouchend="keys['Space']=false"
+                onmousedown="keys['Space']=true" onmouseup="keys['Space']=false"
+                onmouseleave="keys['Space']=false">🤬</button>
+
+            <!-- Right move button -->
+            <button id="btn-right" ontouchstart="keys['ArrowRight']=true" ontouchend="keys['ArrowRight']=false"
+                onmousedown="keys['ArrowRight']=true" onmouseup="keys['ArrowRight']=false"
+                onmouseleave="keys['ArrowRight']=false">▶</button>
+        </div>
+
+        <!-- Keyboard hint (hidden on small screens) -->
+        <div id="controls-hint">
+            ← → to move &nbsp;|&nbsp; SPACE to shoot
+        </div>
+
+    </div>
+
+    <script src="game.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,540 @@
+/* ===========================
+   GLOBAL RESET & FONT
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* Disable text selection and callouts on mobile */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* No page scroll on mobile */
+}
+
+body {
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* dvh = dynamic viewport height (phone safe area) */
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+
+/* ===========================
+   OUTER WRAPPER
+=========================== */
+#game-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  padding: 0 4px;
+}
+
+
+/* ===========================
+   HEADER BAR
+=========================== */
+#header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #7df9ff;
+  text-shadow: 0 0 8px #7df9ff;
+}
+
+#score-display {
+  font-size: 15px;
+  color: #ffd700;
+}
+
+
+/* ===========================
+   GAME CONTAINER
+   Fills width, keeps 2:3 ratio
+=========================== */
+#game-container {
+  width: 100%;
+  /* Maintain a 400:600 (2:3) aspect ratio on any screen */
+  aspect-ratio: 2 / 3;
+  max-height: 60vh;
+  /* Don't push controls off screen */
+  background: radial-gradient(ellipse at center, #0a0a2e 0%, #000005 100%);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #1a1a5e;
+  border-radius: 14px;
+  box-shadow:
+    0 0 30px rgba(100, 100, 255, 0.35),
+    inset 0 0 60px rgba(0, 0, 50, 0.5);
+}
+
+
+/* ===========================
+   STAR BACKGROUND
+=========================== */
+#stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 0.2;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* ===========================
+   PLAYER SPACESHIP
+=========================== */
+#player {
+  position: absolute;
+  width: 12%;
+  /* Percentage of game container — scales on any screen */
+  aspect-ratio: 1;
+  bottom: 2.5%;
+  left: 44%;
+  /* Approximate center start */
+  object-fit: contain;
+  z-index: 10;
+  filter: drop-shadow(0 0 10px rgba(100, 180, 255, 0.8));
+  transition: left 0.04s linear;
+}
+
+
+/* ===========================
+   ENEMY SPACESHIPS
+=========================== */
+.enemy {
+  position: absolute;
+  width: 11%;
+  /* Scales with game container */
+  aspect-ratio: 1;
+  object-fit: contain;
+  z-index: 10;
+  filter: drop-shadow(0 0 8px rgba(255, 80, 80, 0.8));
+  animation: hover-float 2s ease-in-out infinite;
+}
+
+@keyframes hover-float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+
+/* ===========================
+   BULLETS
+=========================== */
+.bullet {
+  position: absolute;
+  font-size: 5%;
+  /* Relative to container */
+  font-size: clamp(16px, 5%, 26px);
+  z-index: 10;
+  line-height: 1;
+  pointer-events: none;
+  animation: bullet-glow 0.3s infinite alternate;
+}
+
+@keyframes bullet-glow {
+  from {
+    filter: brightness(1);
+  }
+
+  to {
+    filter: brightness(1.7);
+  }
+}
+
+
+/* ===========================
+   EXPLOSION
+=========================== */
+.explosion {
+  position: absolute;
+  font-size: clamp(24px, 9%, 42px);
+  z-index: 20;
+  pointer-events: none;
+  animation: explode 0.5s ease-out forwards;
+}
+
+@keyframes explode {
+  0% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+
+/* Larger explosion for player death */
+.explosion-big {
+  font-size: clamp(40px, 14%, 60px);
+  animation: explode-big 0.8s ease-out forwards;
+}
+
+@keyframes explode-big {
+  0% {
+    opacity: 1;
+    transform: scale(0.3);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(3.0);
+  }
+}
+
+
+/* ===========================
+   BOMBS (dropped by enemies)
+=========================== */
+.bomb {
+  position: absolute;
+  font-size: clamp(14px, 4.5%, 22px);
+  z-index: 11;
+  line-height: 1;
+  pointer-events: none;
+  animation: bomb-spin 0.7s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(255, 140, 0, 0.9));
+}
+
+@keyframes bomb-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ===========================
+   POWER-UP ITEM (falling 🥿)
+=========================== */
+.powerup-item {
+  position: absolute;
+  font-size: clamp(18px, 6.5%, 30px);
+  z-index: 15;
+  line-height: 1;
+  pointer-events: none;
+  animation: powerup-float 0.8s ease-in-out infinite alternate,
+    powerup-glow 1.2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8px rgba(100, 255, 100, 1));
+}
+
+@keyframes powerup-float {
+  from {
+    transform: translateY(0px) rotate(-10deg);
+  }
+
+  to {
+    transform: translateY(6px) rotate(10deg);
+  }
+}
+
+@keyframes powerup-glow {
+  from {
+    filter: drop-shadow(0 0 6px rgba(100, 255, 100, 0.8));
+  }
+
+  to {
+    filter: drop-shadow(0 0 16px rgba(180, 255, 100, 1));
+  }
+}
+
+
+/* ===========================
+   POWERED-UP BULLET
+=========================== */
+.bullet-powered {
+  /* Bigger and green-glowing while 🥿 mode is on */
+  font-size: clamp(20px, 6.5%, 30px) !important;
+  filter: drop-shadow(0 0 8px rgba(80, 255, 80, 0.9));
+  animation: powered-glow 0.25s infinite alternate !important;
+}
+
+@keyframes powered-glow {
+  from {
+    filter: drop-shadow(0 0 6px rgba(80, 255, 80, 0.7));
+  }
+
+  to {
+    filter: drop-shadow(0 0 14px rgba(160, 255, 80, 1));
+  }
+}
+
+
+/* ===========================
+   POWER-UP HUD BAR
+=========================== */
+#powerup-bar-wrap {
+  position: absolute;
+  bottom: 20%;
+  /* sits just above the player */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 30;
+  pointer-events: none;
+}
+
+#powerup-bar-wrap.hidden {
+  display: none;
+}
+
+#powerup-label {
+  font-size: clamp(11px, 3.5%, 14px);
+  color: #aaffaa;
+  font-weight: bold;
+  text-shadow: 0 0 8px #00ff88;
+  letter-spacing: 0.5px;
+}
+
+#powerup-bar-bg {
+  width: clamp(90px, 28%, 130px);
+  height: 7px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 255, 100, 0.4);
+}
+
+#powerup-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff88, #aaff44);
+  border-radius: 10px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 6px #00ff88;
+}
+
+
+/* ===========================
+   WAVE CLEAR BANNER
+=========================== */
+.wave-banner {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(15px, 4.5vw, 20px);
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px #ffd700, 0 0 20px rgba(255, 200, 0, 0.5);
+  white-space: nowrap;
+  z-index: 50;
+  pointer-events: none;
+  animation: wave-fade 1.1s ease-out forwards;
+}
+
+@keyframes wave-fade {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.8);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0px) scale(1.05);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0px) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-14px) scale(0.9);
+  }
+}
+
+
+/* ===========================
+   WIN / GAME OVER OVERLAY
+=========================== */
+#message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.78);
+  border-radius: 12px;
+  z-index: 100;
+}
+
+#message.hidden {
+  display: none;
+}
+
+#message-text {
+  font-size: clamp(20px, 6vw, 30px);
+  color: #fff;
+  text-align: center;
+  white-space: pre-line;
+  text-shadow: 0 0 12px #7df9ff;
+  padding: 0 20px;
+}
+
+#restart-btn {
+  padding: 14px 32px;
+  font-size: clamp(15px, 4vw, 18px);
+  background: linear-gradient(135deg, #1a1aff, #7700ff);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(100, 100, 255, 0.7);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+#restart-btn:active {
+  transform: scale(0.94);
+}
+
+
+/* ===========================
+   TOUCH CONTROLS
+=========================== */
+#touch-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+/* All three buttons share this base style */
+#touch-controls button {
+  flex: 1;
+  height: 64px;
+  font-size: 26px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  color: #fff;
+  /* Prevent accidental text select on long-press */
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform 0.1s, opacity 0.1s;
+  /* Prevent ghost-click delays on mobile */
+  touch-action: manipulation;
+}
+
+/* Left button — blue tint */
+#btn-left {
+  background: linear-gradient(135deg, #0055cc, #003399);
+  box-shadow: 0 4px 16px rgba(0, 80, 200, 0.5);
+}
+
+/* Fire button — red/orange, larger */
+#btn-fire {
+  flex: 1.3;
+  /* Slightly wider than move buttons */
+  height: 72px;
+  font-size: 32px;
+  background: linear-gradient(135deg, #cc2200, #ff6600);
+  box-shadow: 0 4px 20px rgba(220, 80, 0, 0.6);
+}
+
+/* Right button — blue tint */
+#btn-right {
+  background: linear-gradient(135deg, #0055cc, #003399);
+  box-shadow: 0 4px 16px rgba(0, 80, 200, 0.5);
+}
+
+/* Pressed state (active for both touch and mouse) */
+#touch-controls button:active {
+  transform: scale(0.90);
+  opacity: 0.85;
+}
+
+
+/* ===========================
+   KEYBOARD HINT
+   Hidden on narrow screens
+=========================== */
+#controls-hint {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 480px) {
+  #controls-hint {
+    display: none;
+    /* Not relevant on phone */
+  }
+}
